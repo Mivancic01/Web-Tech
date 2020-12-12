@@ -2,10 +2,10 @@ import deleteTask from "./deleteTask";
 
 
 const createNewTaskElement = function(taskString) {
-
   const listItem = document.createElement("li");
   const label = document.createElement("label");
   const deleteButton = document.createElement("button");
+
 deleteButton.innerText = "Delete";
   deleteButton.className = "delete";
   deleteButton.addEventListener("click", deleteTask);

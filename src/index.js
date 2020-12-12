@@ -1,5 +1,5 @@
-import addTask from './addTask';
+import { Controller } from './controllers/controller';
+import { View } from './views/view';
+import { Model } from  './models/model';
 
-const addTaskButton = document.getElementById("addTask");
-
-addTaskButton.addEventListener("click", addTask);
+const app = new Controller(new Model(), new View())
