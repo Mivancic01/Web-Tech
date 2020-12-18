@@ -5,6 +5,5 @@ export class User {
     password = '';
 
     constructor() {
-        
     }
 }

@@ -5,7 +5,9 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "build")
   },
-  entry: { index: path.resolve(__dirname, "src", "index.js") },
+  entry: {
+    index: path.resolve(__dirname, "src", "index.js")
+  },
   module: {
     rules: [
       {
