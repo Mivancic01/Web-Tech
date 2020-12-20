@@ -17,7 +17,8 @@ let database = firebase.database();
 let ref = database.ref();
 
 let addUser = (name, surname, date, email ) => {
-  ref.child("users").push({
+  let ref = database.ref("users");
+  ref.push({
     name: name,
     surname: surname,
     date: date,
@@ -25,11 +26,29 @@ let addUser = (name, surname, date, email ) => {
   });
 }
 
-let updateUser = (name, surname, date, email ) => {}
+let updateUser = (name, surname, date, email ) => {
+  let ref = database.ref("users");
+  ref.orderByChild("value").on("child_added", function(snapshot) {
+    if (snapshot.val().name === name) {
+      ref.child(snapshot.key).update({
+        name: name,
+        surname: surname,
+        date: date,
+        email: email
+      }).then(r => r);
+    }
+  }, function (errorObject) {
+    console.log("The read failed: " + errorObject.fileName);
+  });
+
+
+
+}
 
 let addFriend = (user, friendName, friendSurname, friendEmail ) => {
+  let ref = database.ref("users");
   ref.orderByChild("value").on("child_added", function(snapshot) {
-    if (snapshot.val().name === user) {
+     if (snapshot.val().name === user) {
       ref.child(snapshot.key).child("friends").push({
         friendName: friendName,
         friendSurname: friendSurname,
@@ -65,4 +84,5 @@ export {
   addUser,
   addFriend,
   addNotes,
+  updateUser
 };
