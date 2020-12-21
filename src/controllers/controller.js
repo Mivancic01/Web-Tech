@@ -10,7 +10,8 @@
 import {
   addFriend,
   addUser,
-  updateUser
+  updateUser,
+  updateFriendByName
 } from '../service/firebase.service';
 
 export class Controller {
@@ -43,9 +44,10 @@ export class Controller {
 
   handleAddNote = (noteTitle, noteText, noteColor) => {
     //addUser("23", noteText, noteColor, "emailEmail")
-    console.log("inside " + noteTitle + " " + noteText + " " + noteColor)
-    updateUser(noteTitle, noteText, noteColor, "bla")
-    //addFriend("noteTitle", "momo", "meme", "email")
+    //console.log("inside " + noteTitle + " " + noteText + " " + noteColor)
+    //updateUser(noteTitle, noteText, noteColor, "bla")
+    //updateFriendByName("noteTitle", "momo", "laaaaaaa", "email@asd")
+    //addFriend("noteTitle", "novi", "meme", "email")
     this.model.addNote(noteTitle, noteText, noteColor);
   }
 

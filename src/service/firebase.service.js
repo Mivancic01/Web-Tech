@@ -48,7 +48,7 @@ let updateUser = (name, surname, date, email ) => {
 let addFriend = (user, friendName, friendSurname, friendEmail ) => {
   let ref = database.ref("users");
   ref.orderByChild("value").on("child_added", function(snapshot) {
-     if (snapshot.val().name === user) {
+    if (snapshot.val().name === user) {
       ref.child(snapshot.key).child("friends").push({
         friendName: friendName,
         friendSurname: friendSurname,
@@ -60,9 +60,32 @@ let addFriend = (user, friendName, friendSurname, friendEmail ) => {
   });
 }
 
-let updateFriend = (user, friendName, friendSurname, friendEmail ) => {}
+let updateFriendByName = (user, friendName, friendSurname, friendEmail ) => {
+
+  let ref = database.ref("users");
+  ref.orderByChild("value").on("child_added", function(snapshot) {
+    if (snapshot.val().name === user) {
+      let refFriend = database.ref("users/" + snapshot.key + "/friends");
+      refFriend.orderByChild("value").on("child_added", function(snapshotTwo) {
+        if (snapshotTwo.val().friendName === friendName) {
+          refFriend.child(snapshotTwo.key).update({
+            friendName: friendName,
+            friendSurname: friendSurname,
+            friendEmail: friendEmail
+          }).then(r => r);
+        }
+      });
+    }
+  }, function (errorObject) {
+    console.log("The read failed: " + errorObject.fileName);
+  });
+
+
+}
 
 let addNotes = (user, noteTitle, noteText, noteColor ) => {
+
+  let ref = database.ref("users");
   ref.orderByChild("value").on("child_added", function(snapshot) {
     if (snapshot.val().name === user) {
       ref.child(snapshot.key).child("notes").push({
@@ -84,5 +107,6 @@ export {
   addUser,
   addFriend,
   addNotes,
-  updateUser
+  updateUser,
+  updateFriendByName
 };
