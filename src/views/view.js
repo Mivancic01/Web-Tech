@@ -7,6 +7,15 @@
 export class View {
     constructor() {
       this.app = this.getElement('#root');
+      // new code
+      this.rowdiv = this.createElement('div', 'row');
+      this.colform = this.createElement('div', 'col-lg-3');
+      this.colnote = this.createElement('div', 'col-lg-9');
+      this.noteList = this.createElement('div', 'note-list');
+      this.colnote.append(this.noteList);
+      this.app.append(this.rowdiv);
+      this.rowdiv.append(this.colform, this.colnote);
+      // end of new code
       this.div = this.createElement('div');
       this.div.className = "new-note";
 
@@ -32,10 +41,11 @@ export class View {
       this.form.append(this.inputTitle, this.inputText, this.inputColor, this.submitButton);
       this.div.append(this.form);
 
-      this.title = this.createElement('h1');
-      this.title.textContent = 'Notes';
-      this.noteList = this.createElement('ul', 'note-list');
-      this.app.append(this.title, this.div, this.noteList);
+      this.title = this.createElement('h4');
+      this.title.textContent = 'Add notes';
+//      this.noteList = this.createElement('ul', 'note-list');
+//      this.app.append(this.noteList);
+      this.colform.append(this.title, this.div);
 
       this._temporaryNoteText = '';
       this._initLocalListeners();
@@ -89,7 +99,9 @@ export class View {
       } else {
         // Create nodes
         notes.forEach((note) => {
-          const li = this.createElement('li');
+          const li = this.createElement('div', 'col-lg-3');
+          const innerdiv = this.createElement('div', 'indv-note');
+//          const li = this.createElement('li');
           li.id = note.id;
 
           const checkbox = this.createElement('input');
@@ -113,12 +125,18 @@ export class View {
           }
 
           const deleteButton = this.createElement('button', 'delete');
+          deleteButton.classList.add('btn');
+          deleteButton.classList.add('btn-default');
           deleteButton.textContent = 'Delete';
 
-          li.style.backgroundColor = note.color;
-          li.append(checkbox, spanTitle, span, deleteButton);
+          innerdiv.style.backgroundColor = note.color;
+          innerdiv.style.height = '200px';
+          innerdiv.append(checkbox, spanTitle, span, deleteButton);
+//          li.style.backgroundColor = note.color;
+//          li.append(checkbox, spanTitle, span, deleteButton);
 
           // Append nodes
+          li.append(innerdiv);
           this.noteList.append(li);
         })
       }
@@ -147,8 +165,9 @@ export class View {
 
     bindDeleteNote(handler) {
       this.noteList.addEventListener('click', event => {
-        if (event.target.className === 'delete') {
-          const id = parseInt(event.target.parentElement.id)
+        if (event.target.classList.contains('delete')) {
+          const id = parseInt(event.target.parentElement.parentElement.id)
+//          const id = parseInt(event.target.parentElement.id)
 
           handler(id)
         }
@@ -158,7 +177,8 @@ export class View {
     bindEditNote(handler) {
       this.noteList.addEventListener('focusout', event => {
         if (this._temporaryNoteText) {
-          const id = parseInt(event.target.parentElement.id)
+          const id = parseInt(event.target.parentElement.parentElement.id)
+//          const id = parseInt(event.target.parentElement.id)
 
           handler(id, this._temporaryNoteText)
           this._temporaryNoteText = ''
@@ -169,7 +189,8 @@ export class View {
     bindToggleNote(handler) {
       this.noteList.addEventListener('change', event => {
         if (event.target.type === 'checkbox') {
-          const id = parseInt(event.target.parentElement.id)
+          const id = parseInt(event.target.parentElement.parentElement.id)
+//          const id = parseInt(event.target.parentElement.id)
 
           handler(id)
         }
