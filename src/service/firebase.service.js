@@ -1,5 +1,6 @@
 import firebase from "firebase/app";
 import "firebase/database";
+require("firebase/auth");
 
 const firebaseConfig = {
   apiKey: "AIzaSyDmdNGCGoFGQ04AQz4R5_pd4DtKg8Uc2vM",
@@ -12,11 +13,11 @@ const firebaseConfig = {
   measurementId: "G-8SB629Q2HS"
 };
 
-firebase.initializeApp(firebaseConfig);
+const fb = firebase.initializeApp(firebaseConfig);
 let database = firebase.database();
 let ref = database.ref();
 
-let addUser = (name, surname, date, email ) => {
+let addUser = (name, surname, date, email, password ) => {
   let ref = database.ref("users");
   ref.push({
     name: name,
@@ -108,5 +109,6 @@ export {
   addFriend,
   addNotes,
   updateUser,
-  updateFriendByName
+  updateFriendByName,
+  fb
 };

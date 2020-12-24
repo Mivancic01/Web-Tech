@@ -11,7 +11,8 @@ import {
   addFriend,
   addUser,
   updateUser,
-  updateFriendByName
+  updateFriendByName,
+  fb
 } from '../service/firebase.service';
 
 export class Controller {
@@ -27,10 +28,51 @@ export class Controller {
     this.view.bindEditNote(this.handleEditNote)
     this.view.bindDeleteNote(this.handleDeleteNote);
     this.view.bindToggleNote(this.handleToggleNote);
-
+    this.view.bindSigninForm();
+    this.view.bindSigninSubmit(this.handleSigninSubmit);
+    this.view.bindSignupForm();
+    this.view.bindSignupSubmit(this.handleSignupSubmit);
 
     // Display initial notes
     this.onNoteListChanged(this.model.notes);
+  }
+
+  handleSigninSubmit = (email, password) => {
+  console.log("signin");
+    fb.auth().signInWithEmailAndPassword(email, password)
+//    fb.auth().createUserWithEmailAndPassword(email, password)
+    .then((user) => {
+      // Signed in
+      console.log("User signed in");
+      console.log(user);
+      this.view.userSignedin(email);
+    })
+    .catch((error) => {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      console.log("Error");
+      console.log(errorMessage);
+      this.view.displaySigninError(errorMessage);
+    });
+  }
+
+  handleSignupSubmit = (name, secondName, email, password) => {
+    console.log("signup");
+    addUser(name, secondName, "",email);
+    fb.auth().createUserWithEmailAndPassword(email, password)
+    .then((user) => {
+      // Signed in
+      console.log("User signed in");
+      console.log(user);
+      this.view.userSignedin(email);
+    })
+    .catch((error) => {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      console.log("Error");
+      console.log(errorMessage);
+      this.view.displaySigninError(errorMessage);
+    });
   }
 
   onNoteListChanged = (notes) => {

@@ -7,6 +7,52 @@
 export class View {
     constructor() {
       this.app = this.getElement('#root');
+      //Sign/signup form
+      this.notesHeader = this.getElement("#notes-header");
+      this.signin = this.getElement("#sign-in");
+      this.signup = this.getElement("#sign-up");
+      this.signupForm = this.createElement('form', 'sign-up-form');
+      this.signinForm = this.createElement('form', 'sign-in-form');
+      this.signindiv = this.createElement('div', 'container');
+
+      this.signupTitle = this.createElement('h2');
+      this.signupTitle.textContent = 'Sign up';
+
+      this.signinTitle = this.createElement('h2');
+      this.signinTitle.textContent = 'Sign in';
+
+      this.signupName = this.createElement('input');
+      this.signupName.type = 'text';
+      this.signupName.placeholder = 'Enter first name';
+      this.signupName.name = 'user_firstname';
+      this.signupName.required = 'required';
+
+      this.signupSecondName = this.createElement('input');
+      this.signupSecondName.type = 'text';
+      this.signupSecondName.placeholder = 'Enter second name';
+      this.signupSecondName.name = 'user_secondname';
+
+      this.signinEmail = this.createElement('input');
+      this.signinEmail.type = 'email';
+      this.signinEmail.placeholder = 'Enter E-mail';
+      this.signinEmail.name = 'user_email';
+      this.signinEmail.required = 'required';
+
+      this.signinPassword = this.createElement('input');
+      this.signinPassword.type = 'password';
+      this.signinPassword.placeholder = 'Enter password';
+      this.signinPassword.name = 'user_password';
+      this.signinPassword.required = 'required';
+
+      this.signinSubmit = this.createElement('button', 'signin-submit');
+      this.signinSubmit.textContent = 'Submit';
+
+      this.signupSubmit = this.createElement('button', 'signup-submit');
+      this.signupSubmit.textContent = 'Submit';
+
+      this.signErrorMessage = this.createElement('span', 'signin-error-message');
+      this.submitSignin = this.getElement(".signin-submit");
+      //End of sign/signup form
       // new code
       this.rowdiv = this.createElement('div', 'row');
       this.colform = this.createElement('div', 'col-lg-3');
@@ -195,5 +241,50 @@ export class View {
           handler(id)
         }
       })
+    }
+
+    bindSigninForm() {
+        this.signin.addEventListener('click', event => {
+            this.signindiv.append(this.signinTitle, this.signinEmail, this.signinPassword, this.signinSubmit, this.signErrorMessage);
+            this.signinForm.append(this.signindiv);
+            this.app.append(this.signinForm);
+        })
+    }
+
+    bindSigninSubmit(handler) {
+        this.signinForm.addEventListener('submit', event => {
+            event.preventDefault();
+            this.signErrorMessage.textContent = "";
+            handler(this.signinEmail.value, this.signinPassword.value);
+        })
+    }
+
+    userSignedin(email){
+        this.signin.remove();
+        this.signup.remove();
+        const spanUserEmail = this.createElement('span', 'user-details');
+        spanUserEmail.textContent = email;
+        this.notesHeader.append(spanUserEmail);
+    }
+
+    displaySigninError(message){
+        this.signErrorMessage.textContent = message;
+    }
+
+    bindSignupForm() {
+        this.signup.addEventListener('click', event => {
+            this.signindiv.append(this.signupTitle, this.signupName, this.signupSecondName, this.signinEmail, this.signinPassword,
+             this.signupSubmit, this.signErrorMessage);
+            this.signupForm.append(this.signindiv);
+            this.app.append(this.signupForm);
+        })
+    }
+
+    bindSignupSubmit(handler) {
+        this.signupForm.addEventListener('submit', event => {
+            event.preventDefault();
+            this.signErrorMessage.textContent = "";
+            handler(this.signupName.value, this.signupSecondName.value, this.signinEmail.value, this.signinPassword.value);
+        })
     }
   }
