@@ -12,7 +12,11 @@ import {
   addUser,
   updateUser,
   updateFriendByName,
-  fb
+  fb,
+  addNotes,
+  readNotes,
+  updateNotes,
+  deleteNotes
 } from '../service/firebase.service';
 
 export class Controller {
@@ -33,8 +37,50 @@ export class Controller {
     this.view.bindSignupForm();
     this.view.bindSignupSubmit(this.handleSignupSubmit);
 
+    this.handleSignedinUser();
+    this.view.bindSignoutUser(this.handleSignoutUser);
     // Display initial notes
     this.onNoteListChanged(this.model.notes);
+  }
+
+  handleSignedinUser = () => {
+    var user = fb.auth().currentUser;
+    if (user) {
+      // User is signed in.
+      this.view.bindSignoutUnsuccess();
+    } else {
+      // No user is signed in.
+      fb.auth().signOut()
+      .catch((error) => {
+            // An error happened.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            console.log("User signed out error");
+            console.log(errorMessage);
+            this.view.bindSignoutError(errorMessage);
+          });
+      this.view.bindSignoutSuccess();
+    }
+  }
+
+  handleSignoutUser = () => {
+  var userLoggedout = false;
+    fb.auth().signOut().
+    then(() => {
+      // Sign-out successful.
+      console.log("User signed out success");
+      this.view.bindSignoutSuccess();
+      this.model.readAllNotes();
+      this.onNoteListChanged(this.model.notes);
+    }).catch((error) => {
+      // An error happened.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      console.log("User signed out error");
+      console.log(errorMessage);
+      this.view.bindSignoutError(errorMessage);
+    });
+
   }
 
   handleSigninSubmit = (email, password) => {
@@ -45,7 +91,13 @@ export class Controller {
       // Signed in
       console.log("User signed in");
       console.log(user);
-      this.view.userSignedin(email);
+//      this.handleSignedinUser();
+        this.view.userSignedin(email);
+        readNotes(email, (notesFromDB) => {
+            console.log(notesFromDB);
+            this.view.displayNotes(notesFromDB);
+            this.model.notes = notesFromDB;
+        });
     })
     .catch((error) => {
       var errorCode = error.code;
@@ -59,6 +111,7 @@ export class Controller {
   handleSignupSubmit = (name, secondName, email, password) => {
     console.log("signup");
     addUser(name, secondName, "",email);
+//    addNotes(email, "noteTitle", "noteText", "red" );
     fb.auth().createUserWithEmailAndPassword(email, password)
     .then((user) => {
       // Signed in
@@ -90,15 +143,51 @@ export class Controller {
     //updateUser(noteTitle, noteText, noteColor, "bla")
     //updateFriendByName("noteTitle", "momo", "laaaaaaa", "email@asd")
     //addFriend("noteTitle", "novi", "meme", "email")
-    this.model.addNote(noteTitle, noteText, noteColor);
+    var user = fb.auth().currentUser;
+    if (user) {
+      // User is signed in.
+      addNotes(this.model.notes.length, user.email, noteTitle, noteText, noteColor );
+      readNotes(user.email, (notesFromDB) => {
+          console.log(notesFromDB);
+          this.view.displayNotes(notesFromDB);
+          this.model.notes = notesFromDB;
+      });
+    } else {
+      // No user is signed in.
+     this.model.addNote(noteTitle, noteText, noteColor);
+    }
   }
 
   handleEditNote = (id, todoText) => {
-    this.model.editNote(id, todoText);
+  var user = fb.auth().currentUser;
+      if (user) {
+        // User is signed in.
+        updateNotes(id, user.email, todoText );
+        readNotes(user.email, (notesFromDB) => {
+            console.log(notesFromDB);
+            this.view.displayNotes(notesFromDB);
+            this.model.notes = notesFromDB;
+        });
+      } else {
+        // No user is signed in.
+       this.model.editNote(id, todoText);
+      }
   }
 
   handleDeleteNote = (id) => {
-    this.model.deleteNote(id);
+    var user = fb.auth().currentUser;
+      if (user) {
+        // User is signed in.
+        deleteNotes(id, user.email );
+        readNotes(user.email, (notesFromDB) => {
+            console.log(notesFromDB);
+            this.view.displayNotes(notesFromDB);
+            this.model.notes = notesFromDB;
+        });
+      } else {
+        // No user is signed in.
+       this.model.deleteNote(id);
+      }
   }
 
   handleToggleNote = (id) => {

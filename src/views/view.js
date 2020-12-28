@@ -9,8 +9,18 @@ export class View {
       this.app = this.getElement('#root');
       //Sign/signup form
       this.notesHeader = this.getElement("#notes-header");
+      this.spanUserSignout = this.createElement('span', 'user-signout');
+      this.spanUserEmail = this.createElement('span', 'user-details');
+
+      this.spanUserSignout.textContent = "Sign out";
+//      this.spanUserSignout.style.display = "none";
+//      this.spanUserEmail.style.display = "none";
+
+      this.notesHeader.append(this.spanUserEmail, this.spanUserSignout);
+
       this.signin = this.getElement("#sign-in");
       this.signup = this.getElement("#sign-up");
+
       this.signupForm = this.createElement('form', 'sign-up-form');
       this.signinForm = this.createElement('form', 'sign-in-form');
       this.signindiv = this.createElement('div', 'container');
@@ -178,7 +188,7 @@ export class View {
           innerdiv.style.backgroundColor = note.color;
           innerdiv.style.height = '200px';
           innerdiv.append(checkbox, spanTitle, span, deleteButton);
-//          li.style.backgroundColor = note.color;
+          li.style.height = 250;
 //          li.append(checkbox, spanTitle, span, deleteButton);
 
           // Append nodes
@@ -200,6 +210,9 @@ export class View {
     }
 
     bindAddNote(handler) {
+//      console.log(document.getElementsByClassName("note-list"));
+//      console.log(document.getElementsByClassName("note-list").childNodes);
+//      console.log(document.getElementsByClassName("note-list")[0].lastChild);
       this.form.addEventListener('submit', event => {
         event.preventDefault()
         if (this._noteTitle || this._noteText || this._noteColor) {
@@ -256,15 +269,23 @@ export class View {
             event.preventDefault();
             this.signErrorMessage.textContent = "";
             handler(this.signinEmail.value, this.signinPassword.value);
+            this.signinEmail.value = '';
+            this.signinPassword.value = '';
         })
     }
 
     userSignedin(email){
-        this.signin.remove();
-        this.signup.remove();
-        const spanUserEmail = this.createElement('span', 'user-details');
-        spanUserEmail.textContent = email;
-        this.notesHeader.append(spanUserEmail);
+//        this.signin.remove();
+//        this.signup.remove();
+        this.spanUserEmail.textContent = email;
+        this.spanUserSignout.textContent = "Sign out";
+
+        this.signin.style.display = "none";
+        this.signup.style.display = "none";
+
+        this.spanUserSignout.style.display = null;
+        this.spanUserEmail.style.display = null;
+
     }
 
     displaySigninError(message){
@@ -285,6 +306,37 @@ export class View {
             event.preventDefault();
             this.signErrorMessage.textContent = "";
             handler(this.signupName.value, this.signupSecondName.value, this.signinEmail.value, this.signinPassword.value);
+            this.signupName.value = '';
+            this.signupSecondName.value = '';
+            this.signinEmail.value = '';
+            this.signinPassword.value = '';
         })
+    }
+
+    bindSignoutUser(handler) {
+        this.spanUserSignout.addEventListener('click', event => {
+            //Do something only on successful signout!.
+            handler();
+        })
+    }
+
+    bindSignoutUnsuccess() {
+        this.spanUserSignout.style.display = null;
+        this.spanUserEmail.style.display = null;
+
+        this.signin.style.display = "none";
+        this.signup.style.display = "none";
+    }
+
+    bindSignoutSuccess() {
+        this.spanUserSignout.style.display = "none";
+        this.spanUserEmail.style.display = "none";
+
+        this.signin.style.display = null;
+        this.signup.style.display = null;
+    }
+
+    bindSignoutError(errorMessage) {
+        alert(errorMessage);
     }
   }

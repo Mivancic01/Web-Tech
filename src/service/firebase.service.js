@@ -84,12 +84,14 @@ let updateFriendByName = (user, friendName, friendSurname, friendEmail ) => {
 
 }
 
-let addNotes = (user, noteTitle, noteText, noteColor ) => {
+let addNotes = (numberId, userEmail, noteTitle, noteText, noteColor ) => {
 
   let ref = database.ref("users");
   ref.orderByChild("value").on("child_added", function(snapshot) {
-    if (snapshot.val().name === user) {
+    if (snapshot.val().email === userEmail) {
+//    if (snapshot.val().name === user) {
       ref.child(snapshot.key).child("notes").push({
+        numberId: numberId,
         noteTitle: noteTitle,
         noteText: noteText,
         noteColor: noteColor
@@ -101,7 +103,65 @@ let addNotes = (user, noteTitle, noteText, noteColor ) => {
 
 }
 
-let updateNotes = (user, noteTitle, noteText, noteColor ) => {}
+let readNotes = (userEmail, callback) => {
+  database.ref("users").orderByChild("value").on("child_added",  (snapshot) => {
+    if (snapshot.val().email === userEmail) {
+        var notesArr = [];
+        var count = 1;
+        snapshot.child("notes").forEach((s) => {
+            var indvNote = {};
+            indvNote["id"] = s.val().numberId;
+            count = count + 1;
+            indvNote["color"] = s.val().noteColor;
+            indvNote["text"] = s.val().noteText;
+            indvNote["title"] = s.val().noteTitle;
+            indvNote["complete"] = false;
+//            console.log("s.key()");
+//            console.log(s.key())
+            notesArr.push(indvNote);
+        });
+        callback(notesArr);
+    }
+  },  (errorObject) => {
+    console.log("The read failed: " + errorObject.fileName);
+  });
+}
+
+let updateNotes = (numberId, userEmail, newNoteText ) => {
+    let ref = database.ref("users");
+      ref.orderByChild("value").on("child_added", function(snapshot) {
+        if (snapshot.val().email === userEmail) {
+          let refFriend = database.ref("users/" + snapshot.key + "/notes");
+          refFriend.orderByChild("value").on("child_added", (snapshotTwo) => {
+            if (snapshotTwo.val().numberId === numberId) {
+              refFriend.child(snapshotTwo.key).update({
+                noteText: newNoteText
+//                friendSurname: friendSurname,
+//                friendEmail: friendEmail
+              }).then(r => r);
+            }
+          });
+        }
+      }, function (errorObject) {
+        console.log("The read failed: " + errorObject.fileName);
+      });
+}
+
+let deleteNotes = (numberId, userEmail ) => {
+    let ref = database.ref("users");
+      ref.orderByChild("value").on("child_added", function(snapshot) {
+        if (snapshot.val().email === userEmail) {
+          let refFriend = database.ref("users/" + snapshot.key + "/notes");
+          refFriend.orderByChild("value").on("child_added", (snapshotTwo) => {
+            if (snapshotTwo.val().numberId === numberId) {
+              refFriend.child(snapshotTwo.key).remove().then(r => r);
+            }
+          });
+        }
+      }, function (errorObject) {
+        console.log("The read failed: " + errorObject.fileName);
+      });
+}
 
 
 export {
@@ -110,5 +170,8 @@ export {
   addNotes,
   updateUser,
   updateFriendByName,
-  fb
+  fb,
+  readNotes,
+  updateNotes,
+  deleteNotes
 };

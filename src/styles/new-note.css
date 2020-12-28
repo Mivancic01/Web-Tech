@@ -5,7 +5,7 @@
     height: 45px;
     background-color: lightgray;
 }
-header #sign-in:hover, header #sign-up:hover{
+header #sign-in:hover, header #sign-up:hover, header .user-signout:hover{
     cursor: pointer;
 }
   header span:not(:first-child) {

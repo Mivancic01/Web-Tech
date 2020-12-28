@@ -12,6 +12,10 @@ export class Model {
     this.onNoteListChanged = callback
   }
 
+  readAllNotes() {
+    this.notes = JSON.parse(localStorage.getItem('notes')) || [];
+  }
+
   _commit(notes) {
     this.onNoteListChanged(notes);
     localStorage.setItem('notes', JSON.stringify(notes));
