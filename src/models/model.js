@@ -28,7 +28,9 @@ export class Model {
       text: noteText,
       color: noteColor,
       complete: false,
+      draggable: true,
     };
+
 
     this.notes.push(note);
 

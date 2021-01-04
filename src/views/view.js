@@ -160,6 +160,36 @@ export class View {
 //          const li = this.createElement('li');
           li.id = note.id;
 
+          //Start Drag
+          li.draggable = true
+          var startMousePos = {x:0, y:0}
+          var startDivPos = {x:0, y:0}
+          var dragging = false;
+
+          li.onmousedown = function(event) {
+            startMousePos.x = event.clientX;
+            startMousePos.y = event.clientY;
+
+            startDivPos.x = draggable.offsetLeft;
+            startDivPos.y = draggable.offsetTop;
+
+            dragging = true;
+          }
+
+          li.onmousemove = function(event) {
+            if(dragging){
+              deltaX = event.clientX - startMousePos.x;
+              deltaY = event.clientY - startMousePos.y;
+
+              draggable.style.left = (deltaX + startDivPos.x) + "px";
+              draggable.style.top = (deltaY + startDivPos.y) + "px";
+            }
+          }
+
+          li.onmouseup = function(event) {
+            dragging = false;
+          }
+
           const checkbox = this.createElement('input');
           checkbox.type = 'checkbox';
           checkbox.checked = note.complete;
@@ -339,4 +369,9 @@ export class View {
     bindSignoutError(errorMessage) {
         alert(errorMessage);
     }
+
+    HandleDragEvent(ev){
+        this._commit(this.notes);
+    }
+
   }
