@@ -103,6 +103,18 @@ export class View {
 //      this.app.append(this.noteList);
       this.colform.append(this.title, this.div);
 
+      this.noteList.addEventListener('dragover',this.drag_over,false);
+      this.noteList.addEventListener('drop',this.drop,false);
+
+      //DRAG SHIT
+      this.currentX = 0;
+      this.currentY = 0;
+      this.initialX = 0;
+      this.initialY = 0;
+      this.xOffset = 0;
+      this.yOffset = 0;
+      this.active = false;
+
       this._temporaryNoteText = '';
       this._initLocalListeners();
     }
@@ -159,36 +171,12 @@ export class View {
           const innerdiv = this.createElement('div', 'indv-note');
 //          const li = this.createElement('li');
           li.id = note.id;
+          console.log("a note id is: " + li.id);
 
           //Start Drag
           li.draggable = true
-          var startMousePos = {x:0, y:0}
-          var startDivPos = {x:0, y:0}
-          var dragging = false;
 
-          li.onmousedown = function(event) {
-            startMousePos.x = event.clientX;
-            startMousePos.y = event.clientY;
-
-            startDivPos.x = draggable.offsetLeft;
-            startDivPos.y = draggable.offsetTop;
-
-            dragging = true;
-          }
-
-          li.onmousemove = function(event) {
-            if(dragging){
-              deltaX = event.clientX - startMousePos.x;
-              deltaY = event.clientY - startMousePos.y;
-
-              draggable.style.left = (deltaX + startDivPos.x) + "px";
-              draggable.style.top = (deltaY + startDivPos.y) + "px";
-            }
-          }
-
-          li.onmouseup = function(event) {
-            dragging = false;
-          }
+          //End Drag
 
           const checkbox = this.createElement('input');
           checkbox.type = 'checkbox';
@@ -229,6 +217,50 @@ export class View {
 
       // Debugging
       console.log(notes)
+    }
+
+    bindDragEvent() {
+      console.log("ENTERED BIND_DRAG_EVENT()");
+      this.noteList.addEventListener('mousedown', event => {
+            console.log("ENTERED mousedown");
+            this.initialX = event.clientX - this.xOffset;
+            this.initialY = event.clientY - this.yOffset;
+
+            //if (this.checkTargetValidity(event.target)) {
+              this.active = true;
+             // }
+          })
+        this.noteList.addEventListener('mouseup', event => {
+            if(this.active){
+              event.preventDefault();
+              console.log("ENTERED mouseup");
+              this.currentX = event.clientX - this.initialX;
+              this.currentY = event.clientY - this.initialY;
+
+              this.xOffset = this.currentX;
+              this.yOffset = this.currentY;
+
+              event.target.style.transform = "translate3d(" + this.currentX + "px, " + this.currentY + "px, 0)";
+            }
+          })
+        this.noteList.addEventListener('mousemove', event => {
+            this.initialX = this.currentX;
+            this.initialY = this.currentY;
+
+            this.active = false;
+            console.log("ENTERED mousemove");
+          })
+    }
+
+    checkTargetValidity(eventTarget){
+         // console.log("the target id is: " + eventTarget);
+      for (var i = 0; i < this.noteList.length; i++) {
+        if(this.noteList[i] === eventTarget){
+          console.log("found our target!");
+          return true;
+          }
+        }
+      return false;
     }
 
     _initLocalListeners() {

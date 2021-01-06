@@ -36,6 +36,7 @@ export class Controller {
     this.view.bindSigninSubmit(this.handleSigninSubmit);
     this.view.bindSignupForm();
     this.view.bindSignupSubmit(this.handleSignupSubmit);
+    this.view.bindDragEvent();
 
     this.handleSignedinUser();
     this.view.bindSignoutUser(this.handleSignoutUser);
