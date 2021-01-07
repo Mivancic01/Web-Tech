@@ -137,7 +137,7 @@ export class Controller {
   //  this.model.addNote(noteTitle, noteText, noteColor);
   //}
 
-  handleAddNote = (noteTitle, noteText, noteColor) => {
+  handleAddNote = (noteTitle, noteText, noteColor, image) => {
     //addUser("23", noteText, noteColor, "emailEmail")
     //console.log("inside " + noteTitle + " " + noteText + " " + noteColor)
     //updateUser(noteTitle, noteText, noteColor, "bla")
@@ -154,7 +154,7 @@ export class Controller {
       });
     } else {
       // No user is signed in.
-     this.model.addNote(noteTitle, noteText, noteColor);
+     this.model.addNote(noteTitle, noteText, noteColor, image);
     }
   }
 
