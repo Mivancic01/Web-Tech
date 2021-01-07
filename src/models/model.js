@@ -21,12 +21,13 @@ export class Model {
     localStorage.setItem('notes', JSON.stringify(notes));
   }
 
-  addNote(noteTitle, noteText, noteColor) {
+  addNote(noteTitle, noteText, noteColor, image) {
     const note = {
       id: this.notes.length > 0 ? this.notes[this.notes.length - 1].id + 1 : 1,
       title: noteTitle,
       text: noteText,
       color: noteColor,
+      image: image,
       complete: false,
     };
 

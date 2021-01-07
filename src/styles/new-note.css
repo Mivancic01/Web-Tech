@@ -1,48 +1,48 @@
-
-  header{
-    width: 100%;
-    padding-top: 6px;
-    height: 45px;
-    background-color: lightgray;
+header {
+  width: 100%;
+  padding-top: 6px;
+  height: 45px;
+  background-color: lightgray;
 }
 header #sign-in:hover, header #sign-up:hover, header .user-signout:hover{
-    cursor: pointer;
+  cursor: pointer;
 }
-  header span:not(:first-child) {
-    float: right;
-    text-decoration: none;
-    margin-right: 20px;
-    font-size: 20px;
-    color: blue;
 
+header span:not(:first-child) {
+  float: right;
+  text-decoration: none;
+  margin-right: 20px;
+  font-size: 20px;
+  color: blue;
 }
-  header span:first-child {
-    float: left;
-    text-decoration: none;
-    margin-left: 20px;
-    font-size: 20px;
-    color: blue;
+
+header span:first-child {
+  float: left;
+  text-decoration: none;
+  margin-left: 20px;
+  font-size: 20px;
+  color: blue;
 }
 
 #root .col-lg-9{
-    margin-top: 15px;
+  margin-top: 15px;
 }
 
 .indv-note:hover {
-    box-shadow: 3px 3px 3px grey;
+  box-shadow: 3px 3px 3px grey;
 }
 
 .note-list span {
-   display: block;
-   padding: 5px;
+  display: block;
+  padding: 5px;
 }
 
 .note-list button.delete {
-    display: block;
-    margin: 5px;
+  display: block;
+  margin: 5px;
 }
 .note-list  span:first-of-type{
-    font-size: 20px;
+  font-size: 20px;
 }
 
 input[type=text], select {
@@ -75,3 +75,11 @@ input[type=submit]:hover {
   background-color: #f2f2f2;
   padding: 20px;
 }
+
+.note-image {
+  height: 75px;
+}
+
+/* Adapt font color if the background is light or dark  */
+.dark-color { color: black }
+.light-color { color: white }	
