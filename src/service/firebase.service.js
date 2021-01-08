@@ -84,7 +84,7 @@ let updateFriendByName = (user, friendName, friendSurname, friendEmail ) => {
 
 }
 
-let addNotes = (numberId, userEmail, noteTitle, noteText, noteColor ) => {
+let addNotes = (numberId, userEmail, noteTitle, noteText, noteColor, noteImage ) => {
 
   let ref = database.ref("users");
   ref.orderByChild("value").on("child_added", function(snapshot) {
@@ -94,7 +94,8 @@ let addNotes = (numberId, userEmail, noteTitle, noteText, noteColor ) => {
         numberId: numberId,
         noteTitle: noteTitle,
         noteText: noteText,
-        noteColor: noteColor
+        noteColor: noteColor,
+        noteImage: noteImage
       });
     }
   }, function (errorObject) {
@@ -115,6 +116,7 @@ let readNotes = (userEmail, callback) => {
             indvNote["color"] = s.val().noteColor;
             indvNote["text"] = s.val().noteText;
             indvNote["title"] = s.val().noteTitle;
+            indvNote["image"] = s.val().noteImage;
             indvNote["complete"] = false;
 //            console.log("s.key()");
 //            console.log(s.key())

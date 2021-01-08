@@ -146,7 +146,7 @@ export class Controller {
     var user = fb.auth().currentUser;
     if (user) {
       // User is signed in.
-      addNotes(this.model.notes.length, user.email, noteTitle, noteText, noteColor );
+      addNotes(this.model.notes.length, user.email, noteTitle, noteText, noteColor, image );
       readNotes(user.email, (notesFromDB) => {
           console.log(notesFromDB);
           this.view.displayNotes(notesFromDB);
