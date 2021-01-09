@@ -183,7 +183,7 @@ export class View {
         this.noteList.removeChild(this.noteList.firstChild);
       }
 
-      console.log("FUCKING DISPLAY!");
+//      console.log("FUCKING DISPLAY!");
 
       // Show default message
       if (notes.length === 0) {
@@ -230,10 +230,10 @@ export class View {
 
           if (note.complete) {
             const strike = this.createElement('s');
-            strike.textContent = note.text;
+            strike.textContent = atob(note.text);
             span.append(strike);
           } else {
-            span.textContent = note.text;
+            span.textContent = atob(note.text);
           }
 
           const deleteButton = this.createElement('button', 'delete');
@@ -439,7 +439,6 @@ export class View {
         if (this._temporaryNoteText) {
           const id = parseInt(event.target.parentElement.parentElement.id)
 //          const id = parseInt(event.target.parentElement.id)
-
           handler(id, this._temporaryNoteText)
           this._temporaryNoteText = ''
         }

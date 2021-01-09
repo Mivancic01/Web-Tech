@@ -111,11 +111,12 @@ export class Controller {
 
   handleSignupSubmit = (name, secondName, email, password) => {
     console.log("signup");
-    addUser(name, secondName, "",email);
+
 //    addNotes(email, "noteTitle", "noteText", "red" );
     fb.auth().createUserWithEmailAndPassword(email, password)
     .then((user) => {
       // Signed in
+      addUser(name, secondName, "",email);
       console.log("User signed in");
       console.log(user);
       this.view.userSignedin(email);
@@ -145,33 +146,50 @@ export class Controller {
     //updateFriendByName("noteTitle", "momo", "laaaaaaa", "email@asd")
     //addFriend("noteTitle", "novi", "meme", "email")
     var user = fb.auth().currentUser;
+    const worker = new Worker("../src/worker.js");
+    worker.postMessage( noteText);
     if (user) {
       // User is signed in.
-      addNotes(this.model.notes.length, user.email, noteTitle, noteText, noteColor, image );
-      readNotes(user.email, (notesFromDB) => {
+      worker.onmessage = e => {
+        var encodedText = e.data;
+        const nextNoteId = this.model.notes.length > 0 ? this.model.notes[this.model.notes.length - 1].id + 1 : 1;
+        addNotes(nextNoteId, user.email, noteTitle, encodedText, noteColor, image );
+        readNotes(user.email, (notesFromDB) => {
           console.log(notesFromDB);
           this.view.displayNotes(notesFromDB);
           this.model.notes = notesFromDB;
-      });
+        });
+      };
     } else {
       // No user is signed in.
-     this.model.addNote(noteTitle, noteText, noteColor, image);
+      worker.onmessage = e => {
+      var encodedText = e.data;
+      this.model.addNote(noteTitle, encodedText, noteColor, image);
+    };
     }
   }
 
   handleEditNote = (id, todoText) => {
   var user = fb.auth().currentUser;
+  const worker = new Worker("../src/worker.js");
+  worker.postMessage(todoText);
       if (user) {
         // User is signed in.
-        updateNotes(id, user.email, todoText );
-        readNotes(user.email, (notesFromDB) => {
-            console.log(notesFromDB);
-            this.view.displayNotes(notesFromDB);
-            this.model.notes = notesFromDB;
-        });
+        worker.onmessage = e => {
+          var encodedText = e.data;
+          updateNotes(id, user.email, encodedText );
+          readNotes(user.email, (notesFromDB) => {
+              console.log(notesFromDB);
+              this.view.displayNotes(notesFromDB);
+              this.model.notes = notesFromDB;
+          });
+        };
       } else {
         // No user is signed in.
-       this.model.editNote(id, todoText);
+        worker.onmessage = e => {
+          var encodedText = e.data;
+          this.model.editNote(id, encodedText);
+        };
       }
   }
 
