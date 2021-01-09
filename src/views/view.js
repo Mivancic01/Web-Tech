@@ -114,6 +114,12 @@ export class View {
       this.xOffset = 0;
       this.yOffset = 0;
       this.active = false;
+      this.dragTarget = null;
+      this.mousePosX = 0;
+      this.mousePoxY = 0;
+      this.positionDict = {};
+
+      //END OF DRAG SHIT
 
       this._temporaryNoteText = '';
       this._initLocalListeners();
@@ -159,6 +165,8 @@ export class View {
         this.noteList.removeChild(this.noteList.firstChild);
       }
 
+      console.log("FUCKING DISPLAY!");
+
       // Show default message
       if (notes.length === 0) {
         const p = this.createElement('p');
@@ -189,6 +197,14 @@ export class View {
           const span = this.createElement('span');
           span.contentEditable = true;
           span.classList.add('editable');
+
+          //Edit position dict
+          if(!(note.id in this.positionDict)){
+            this.positionDict[note.id] = [0, 0];
+          }
+          else {
+            li.style.transform = "translate3d(" + this.positionDict[note.id][0] + "px, " + this.positionDict[note.id][1] + "px, 0)";
+          }
 
           if (note.complete) {
             const strike = this.createElement('s');
@@ -222,44 +238,84 @@ export class View {
     bindDragEvent() {
       console.log("ENTERED BIND_DRAG_EVENT()");
       this.noteList.addEventListener('mousedown', event => {
-            console.log("ENTERED mousedown");
+            /*console.log("ENTERED mousedown");
+            console.log("EVENT TARGET ATTR ID: " + event.target);
+            this.xOffset = 0;
+            this.yOffset = 0;
             this.initialX = event.clientX - this.xOffset;
-            this.initialY = event.clientY - this.yOffset;
+            this.initialY = event.clientY - this.yOffset;*/
 
-            //if (this.checkTargetValidity(event.target)) {
+           // if (this.checkTargetValidity(event.target)) {
+           //   this.active = true;
+           //    }
+
+            if(this.checkTargetValidity(event.target) == true){
+              //console.log("SETTING DRAG TARGET");
               this.active = true;
-             // }
+
+              var style = window.getComputedStyle(this.dragTarget);
+              var matrix = new WebKitCSSMatrix(style.transform);
+              this.xOffset = matrix.m41;
+              this.yOffset = matrix.m42;
+
+              this.initialX = event.clientX - this.xOffset;
+              this.initialY = event.clientY - this.yOffset;
+
+
+
+            }
           })
-        this.noteList.addEventListener('mouseup', event => {
+        this.noteList.addEventListener('drop', event => {
             if(this.active){
               event.preventDefault();
-              console.log("ENTERED mouseup");
               this.currentX = event.clientX - this.initialX;
               this.currentY = event.clientY - this.initialY;
 
               this.xOffset = this.currentX;
               this.yOffset = this.currentY;
 
-              event.target.style.transform = "translate3d(" + this.currentX + "px, " + this.currentY + "px, 0)";
+              //console.log("Final translate3d pos: " + this.xOffset + ", " + this.yOffset);
+              this.dragTarget.style.transform = "translate3d(" + this.currentX + "px, " + this.currentY + "px, 0)";
+              console.log("Drag Target ID is: " + this.dragTarget.id);
+              this.positionDict[this.dragTarget.id] = [this.currentX, this.currentY];
+              this.dragTarget = null;
+              this.active = false;
             }
           })
-        this.noteList.addEventListener('mousemove', event => {
-            this.initialX = this.currentX;
-            this.initialY = this.currentY;
+        this.noteList.addEventListener('drag', event => {
+            if(this.dragTarget != null){
+              //console.log("DRAG: X is: " + event.clientX + ", and Y is: " + event.clientY);
+              this.currentX = event.clientX - this.initialX;
+              this.currentY = event.clientY - this.initialY;
 
-            this.active = false;
-            console.log("ENTERED mousemove");
+              this.xOffset = this.currentX;
+              this.yOffset = this.currentY;
+
+              this.dragTarget.style.transform = "translate3d(" + this.currentX + "px, " + this.currentY + "px, 0)";
+            }
+          })
+        this.noteList.addEventListener('dragenter', event => {
+            event.preventDefault();
+          })
+        this.noteList.addEventListener('dragover', event => {
+            event.preventDefault();
           })
     }
 
     checkTargetValidity(eventTarget){
-         // console.log("the target id is: " + eventTarget);
-      for (var i = 0; i < this.noteList.length; i++) {
-        if(this.noteList[i] === eventTarget){
+          console.log("the target id is: " + eventTarget.getAttribute('id'));
+
+      var children = this.noteList.children;
+      for (var i = 0; i < children.length; i++) {
+          console.log("Looking!");
+          console.log(children[i].id);
+        if(children[i].firstChild === eventTarget){
           console.log("found our target!");
+          this.dragTarget = children[i];
           return true;
           }
         }
+      this.dragTarget = null;
       return false;
     }
 
@@ -284,11 +340,40 @@ export class View {
       })
     }
 
+    adjustNotesWidth(id){
+    //GET WIDTH
+      var element = document.getElementById(id);
+      var positionInfo = element.getBoundingClientRect();
+      var height = positionInfo.height;
+      var width = positionInfo.width;
+      console.log("BOX: " + height + ", " + width);
+
+      //ADJUST THE WIDTH OF EVERY OTHER NOTE MADE AFTER THE DELETED ONE
+      var children = this.noteList.children;
+      for (var i = 0; i < children.length; i++) {
+        if(children[i].className === "col-lg-3"){
+          console.log("Note!");
+          if(children[i].id > id){
+            if(this.positionDict[children[i].id][0] != 0 && this.positionDict[children[i].id][1] != 0){
+              console.log("ADJUSTING!");
+              this.positionDict[children[i].id][0] += width;
+              console.log("End Adjusting!");
+            }
+            }
+          }
+        }
+    }
+
     bindDeleteNote(handler) {
       this.noteList.addEventListener('click', event => {
         if (event.target.classList.contains('delete')) {
           const id = parseInt(event.target.parentElement.parentElement.id)
 //          const id = parseInt(event.target.parentElement.id)
+          if((id in this.positionDict)){
+            delete this.positionDict[id];
+
+            this.adjustNotesWidth(id);
+          }
 
           handler(id)
         }
