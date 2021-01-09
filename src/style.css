@@ -1,0 +1,53 @@
+body{
+  margin:0;
+}
+
+form {
+  background-color: skyblue;
+  position: absolute;
+  left: 50%;
+  top: 18%;
+  padding: 57px;
+  text-align: center;
+  transform: translateX(-50%);
+  border-radius: 22px;
+}
+
+form label {
+  font-size: 20px;
+}
+
+form input {
+  font-size: 21px;
+}
+
+header {
+  width: 100%;
+  padding-top: 20px;
+  height: 41px;
+  background-color: lightgray;
+}
+
+header a:not(:first-child) {
+  float: right;
+  text-decoration: none;
+  margin-right: 20px;
+  font-size: 20px;
+  color: blue;
+}
+
+header a:first-child {
+  float: left;
+  text-decoration: none;
+  margin-left: 20px;
+  font-size: 20px;
+  color: blue;
+}
+
+button {
+  padding: 14px 20px;
+  cursor: pointer;
+  background-color: lightgray;
+  border-radius: 25px;
+  border: beige;
+}

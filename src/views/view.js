@@ -3,8 +3,12 @@
  *
  * Visual representation of the model.
  */
+import { whiteboardListener, clearCanvas } from '../helpers/whiteboard.helper';
+import { adaptColor } from '../helpers/adapt-color.helper';
 
 export class View {
+    canvasID = 'canvase';
+
     constructor() {
       this.app = this.getElement('#root');
       //Sign/signup form
@@ -87,14 +91,25 @@ export class View {
       this.inputText.placeholder = 'Add text';
       this.inputText.name = 'text';
 
+      const divColor = this.createElement('div', 'color-input-container');
+
+      const colorInstructions = this.createElement('span');
+      colorInstructions.contentEditable = false;
+      colorInstructions.textContent = 'Pick the color of your note: ';
+      
       this.inputColor = this.createElement('input');
-      this.inputColor.type = 'text';
+      this.inputColor.type = 'color';
       this.inputColor.placeholder = 'Add color';
       this.inputColor.name = 'color';
+      this.inputColor.value = '#ffffff'
+
+      divColor.append(colorInstructions, this.inputColor);
 
       this.submitButton = this.createElement('button');
       this.submitButton.textContent = 'Submit';
-      this.form.append(this.inputTitle, this.inputText, this.inputColor, this.submitButton);
+      const whiteboard = this.displayWhiteBoard();
+
+      this.form.append(this.inputTitle, this.inputText, whiteboard, divColor, this.submitButton);
       this.div.append(this.form);
 
       this.title = this.createElement('h4');
@@ -122,6 +137,7 @@ export class View {
       //END OF DRAG SHIT
 
       this._temporaryNoteText = '';
+      whiteboardListener(this.canvasID);
       this._initLocalListeners();
     }
 
@@ -140,7 +156,9 @@ export class View {
     _resetInput() {
       this.inputTitle.value = '';
       this.inputText.value = '';
-      this.inputColor.value = '';
+      this.inputColor.value = '#ffffff';
+
+      clearCanvas(this.canvasID);
     }
 
     createElement(tag, className) {
@@ -174,10 +192,14 @@ export class View {
         this.noteList.append(p);
       } else {
         // Create nodes
+        let noteIDs = [];
         notes.forEach((note) => {
           const li = this.createElement('div', 'col-lg-3');
           const innerdiv = this.createElement('div', 'indv-note');
-//          const li = this.createElement('li');
+          const noteID = `note-${note.id}`;
+          innerdiv.setAttribute('id', noteID);
+          noteIDs.push(noteID);
+
           li.id = note.id;
           console.log("a note id is: " + li.id);
 
@@ -218,21 +240,49 @@ export class View {
           deleteButton.classList.add('btn');
           deleteButton.classList.add('btn-default');
           deleteButton.textContent = 'Delete';
+          deleteButton.style.position = 'absolute';
+          deleteButton.style.top = 0;
+          deleteButton.style.right = 0;
+
+          const image = this.createElement('img', 'note-image');
+          image.setAttribute('src', note.image);
 
           innerdiv.style.backgroundColor = note.color;
           innerdiv.style.height = '200px';
+          innerdiv.style.position = 'relative';
           innerdiv.append(checkbox, spanTitle, span, deleteButton);
           li.style.height = 250;
-//          li.append(checkbox, spanTitle, span, deleteButton);
+
+          if (note.image) {
+            innerdiv.append(image);
+          }
 
           // Append nodes
           li.append(innerdiv);
           this.noteList.append(li);
-        })
+        });
+        noteIDs.forEach((noteID) => adaptColor(noteID));
       }
+    }
 
-      // Debugging
-      console.log(notes)
+    displayWhiteBoard() {
+      const divWhole = this.createElement('div');
+      divWhole.setAttribute('id', 'whole');
+      const divInstructions = this.createElement('div');
+      divInstructions.setAttribute('id', 'instructions');
+      const divBoard = this.createElement('div');
+      divBoard.setAttribute('id', 'board');
+      const canvas = this.createElement('canvas');
+      canvas.setAttribute('id', this.canvasID);
+      const spanInstructions = this.createElement('span');
+      spanInstructions.contentEditable = false;
+      spanInstructions.textContent = 'Draw something in your note by tapping or dragging in the box'; 
+
+      divBoard.append(canvas);
+      divInstructions.append(spanInstructions);
+      divWhole.append(divInstructions, divBoard);
+
+      return divWhole;
     }
 
     bindDragEvent() {
@@ -334,8 +384,12 @@ export class View {
       this.form.addEventListener('submit', event => {
         event.preventDefault()
         if (this._noteTitle || this._noteText || this._noteColor) {
-          handler(this._noteTitle, this._noteText, this._noteColor)
-          this._resetInput()
+          const canvas = document.getElementById(this.canvasID);
+          const img = canvas.toDataURL('image/png');
+          console.log(img);
+          handler(this._noteTitle, this._noteText, this._noteColor, img);
+
+          this._resetInput();
         }
       })
     }

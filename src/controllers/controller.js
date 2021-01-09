@@ -138,7 +138,7 @@ export class Controller {
   //  this.model.addNote(noteTitle, noteText, noteColor);
   //}
 
-  handleAddNote = (noteTitle, noteText, noteColor) => {
+  handleAddNote = (noteTitle, noteText, noteColor, image) => {
     //addUser("23", noteText, noteColor, "emailEmail")
     //console.log("inside " + noteTitle + " " + noteText + " " + noteColor)
     //updateUser(noteTitle, noteText, noteColor, "bla")
@@ -147,7 +147,7 @@ export class Controller {
     var user = fb.auth().currentUser;
     if (user) {
       // User is signed in.
-      addNotes(this.model.notes.length, user.email, noteTitle, noteText, noteColor );
+      addNotes(this.model.notes.length, user.email, noteTitle, noteText, noteColor, image );
       readNotes(user.email, (notesFromDB) => {
           console.log(notesFromDB);
           this.view.displayNotes(notesFromDB);
@@ -155,7 +155,7 @@ export class Controller {
       });
     } else {
       // No user is signed in.
-     this.model.addNote(noteTitle, noteText, noteColor);
+     this.model.addNote(noteTitle, noteText, noteColor, image);
     }
   }
 
