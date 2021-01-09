@@ -31,6 +31,7 @@ export class Model {
       complete: false,
     };
 
+
     this.notes.push(note);
 
     this._commit(this.notes);
