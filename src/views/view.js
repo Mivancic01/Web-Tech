@@ -286,7 +286,7 @@ export class View {
     }
 
     bindDragEvent() {
-      console.log("ENTERED BIND_DRAG_EVENT()");
+      //console.log("ENTERED BIND_DRAG_EVENT()");
       this.noteList.addEventListener('mousedown', event => {
             /*console.log("ENTERED mousedown");
             console.log("EVENT TARGET ATTR ID: " + event.target);
@@ -326,7 +326,7 @@ export class View {
 
               //console.log("Final translate3d pos: " + this.xOffset + ", " + this.yOffset);
               this.dragTarget.style.transform = "translate3d(" + this.currentX + "px, " + this.currentY + "px, 0)";
-              console.log("Drag Target ID is: " + this.dragTarget.id);
+              //("Drag Target ID is: " + this.dragTarget.id);
               this.positionDict[this.dragTarget.id] = [this.currentX, this.currentY];
               this.dragTarget = null;
               this.active = false;
@@ -353,14 +353,14 @@ export class View {
     }
 
     checkTargetValidity(eventTarget){
-          console.log("the target id is: " + eventTarget.getAttribute('id'));
+          //("the target id is: " + eventTarget.getAttribute('id'));
 
       var children = this.noteList.children;
       for (var i = 0; i < children.length; i++) {
-          console.log("Looking!");
-          console.log(children[i].id);
+          //console.log("Looking!");
+         // console.log(children[i].id);
         if(children[i].firstChild === eventTarget){
-          console.log("found our target!");
+          //console.log("found our target!");
           this.dragTarget = children[i];
           return true;
           }
@@ -400,18 +400,18 @@ export class View {
       var positionInfo = element.getBoundingClientRect();
       var height = positionInfo.height;
       var width = positionInfo.width;
-      console.log("BOX: " + height + ", " + width);
+      //console.log("BOX: " + height + ", " + width);
 
       //ADJUST THE WIDTH OF EVERY OTHER NOTE MADE AFTER THE DELETED ONE
       var children = this.noteList.children;
       for (var i = 0; i < children.length; i++) {
         if(children[i].className === "col-lg-3"){
-          console.log("Note!");
+          //console.log("Note!");
           if(children[i].id > id){
             if(this.positionDict[children[i].id][0] != 0 && this.positionDict[children[i].id][1] != 0){
-              console.log("ADJUSTING!");
+              //console.log("ADJUSTING!");
               this.positionDict[children[i].id][0] += width;
-              console.log("End Adjusting!");
+              //console.log("End Adjusting!");
             }
             }
           }
