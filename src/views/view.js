@@ -11,6 +11,7 @@ export class View {
 
     constructor() {
       this.app = this.getElement('#root');
+//      this.modalClose = this.getElement('.modal-close');
       //Sign/signup form
       this.notesHeader = this.getElement("#notes-header");
       this.spanUserSignout = this.createElement('span', 'user-signout');
@@ -32,8 +33,8 @@ export class View {
       this.signupTitle = this.createElement('h2');
       this.signupTitle.textContent = 'Sign up';
 
-      this.signinTitle = this.createElement('h2');
-      this.signinTitle.textContent = 'Sign in';
+//      this.signinTitle = this.createElement('h2');
+//      this.signinTitle.textContent = 'Sign in';
 
       this.signupName = this.createElement('input');
       this.signupName.type = 'text';
@@ -60,12 +61,16 @@ export class View {
 
       this.signinSubmit = this.createElement('button', 'signin-submit');
       this.signinSubmit.textContent = 'Submit';
+      this.signinSubmit.classList.add("btn");
+      this.signinSubmit.classList.add("btn-primary");
 
       this.signupSubmit = this.createElement('button', 'signup-submit');
       this.signupSubmit.textContent = 'Submit';
+      this.signupSubmit.classList.add("btn");
+      this.signupSubmit.classList.add("btn-primary");
 
       this.signErrorMessage = this.createElement('span', 'signin-error-message');
-      this.submitSignin = this.getElement(".signin-submit");
+//      this.submitSignin = this.getElement(".signin-submit");
       //End of sign/signup form
       // new code
       this.rowdiv = this.createElement('div', 'row');
@@ -418,6 +423,19 @@ export class View {
         }
     }
 
+    bindCloseModal(){
+//        this.modalClose.addEventListener('click', event => {
+//            const myModal = this.getElement('#user-signin-myModal');
+//            myModal.style.display = "none";
+//        })
+
+        const closeModalClose = this.getElement(".close-modal-close");
+        closeModalClose.addEventListener('click', event => {
+            const myModal = this.getElement('#user-signin-myModal');
+            myModal.style.display = "none";
+        })
+    }
+
     bindDeleteNote(handler) {
       this.noteList.addEventListener('click', event => {
         if (event.target.classList.contains('delete')) {
@@ -458,9 +476,22 @@ export class View {
 
     bindSigninForm() {
         this.signin.addEventListener('click', event => {
-            this.signindiv.append(this.signinTitle, this.signinEmail, this.signinPassword, this.signinSubmit, this.signErrorMessage);
-            this.signinForm.append(this.signindiv);
-            this.app.append(this.signinForm);
+            const userSigninModalBody = this.getElement(".user-signin-modal-body");
+            while (userSigninModalBody.firstChild) {
+                userSigninModalBody.removeChild(userSigninModalBody.firstChild);
+              }
+            this.signErrorMessage.textContent = "";
+            const userSigninModalTitle = this.getElement(".user-signin-modal-title");
+            userSigninModalTitle.textContent = "Sign in";
+
+            this.signinForm.append(this.signinEmail, this.signinPassword, this.signinSubmit, this.signErrorMessage);
+//            this.signinForm.append(this.signinTitle, this.signinEmail, this.signinPassword, this.signinSubmit, this.signErrorMessage);
+//            this.signinForm.append(this.signindiv);
+            userSigninModalBody.append(this.signinForm);
+//            this.app.append(this.signinForm);
+
+            const myModal = this.getElement("#user-signin-myModal");
+            myModal.style.display = "block";
         })
     }
 
@@ -486,6 +517,9 @@ export class View {
         this.spanUserSignout.style.display = null;
         this.spanUserEmail.style.display = null;
 
+        const myModal = this.getElement('#user-signin-myModal');
+        myModal.style.display = "none";
+
     }
 
     displaySigninError(message){
@@ -494,10 +528,21 @@ export class View {
 
     bindSignupForm() {
         this.signup.addEventListener('click', event => {
-            this.signindiv.append(this.signupTitle, this.signupName, this.signupSecondName, this.signinEmail, this.signinPassword,
+            const userSigninModalBody = this.getElement(".user-signin-modal-body");
+            while (userSigninModalBody.firstChild) {
+                userSigninModalBody.removeChild(userSigninModalBody.firstChild);
+            }
+            this.signErrorMessage.textContent = "";
+            const userSigninModalTitle = this.getElement(".user-signin-modal-title");
+            userSigninModalTitle.textContent = "Sign up";
+
+            this.signupForm.append(this.signupName, this.signupSecondName, this.signinEmail, this.signinPassword,
              this.signupSubmit, this.signErrorMessage);
-            this.signupForm.append(this.signindiv);
-            this.app.append(this.signupForm);
+//            this.signupForm.append(this.signindiv);
+            userSigninModalBody.append(this.signupForm);
+
+            const myModal = this.getElement("#user-signin-myModal");
+            myModal.style.display = "block";
         })
     }
 

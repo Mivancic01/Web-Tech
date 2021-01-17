@@ -37,6 +37,7 @@ export class Controller {
     this.view.bindSignupForm();
     this.view.bindSignupSubmit(this.handleSignupSubmit);
     this.view.bindDragEvent();
+    this.view.bindCloseModal();
 
     this.handleSignedinUser();
     this.view.bindSignoutUser(this.handleSignoutUser);
@@ -120,6 +121,8 @@ export class Controller {
       console.log("User signed in");
       console.log(user);
       this.view.userSignedin(email);
+      this.view.displayNotes([]);
+      this.model.notes = [];
     })
     .catch((error) => {
       var errorCode = error.code;

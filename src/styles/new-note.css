@@ -8,6 +8,25 @@ header #sign-in:hover, header #sign-up:hover, header .user-signout:hover{
   cursor: pointer;
 }
 
+#user-signin-myModal{
+    z-index: 1;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.7);
+}
+
+.signin-error-message{
+    display: block;
+    padding-top: 10px;
+}
+
+.user-signin-modal-title{
+    display: inline;
+}
+
+.user-signin-modal-body{
+    padding: 20px;
+}
+
 header span:not(:first-child) {
   float: right;
   text-decoration: none;
@@ -45,7 +64,7 @@ header span:first-child {
   font-size: 20px;
 }
 
-input[type=text], select {
+input[type=text], select, input[type=email], input[type=password] {
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
