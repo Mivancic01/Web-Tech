@@ -95,8 +95,10 @@ let addNotes = (numberId, userEmail, noteTitle, noteText, noteColor, noteImage )
         noteTitle: noteTitle,
         noteText: noteText,
         noteColor: noteColor,
-        noteImage: noteImage
+        noteImage: noteImage,
+        complete: false
       });
+      console.log("add notes");
     }
   }, function (errorObject) {
     console.log("The read failed: " + errorObject.fileName);
@@ -117,17 +119,106 @@ let readNotes = (userEmail, callback) => {
             indvNote["text"] = s.val().noteText;
             indvNote["title"] = s.val().noteTitle;
             indvNote["image"] = s.val().noteImage;
-            indvNote["complete"] = false;
+            indvNote["complete"] = s.val().complete;
 //            console.log("s.key()");
 //            console.log(s.key())
             notesArr.push(indvNote);
         });
+        console.log("read notes");
         callback(notesArr);
     }
   },  (errorObject) => {
     console.log("The read failed: " + errorObject.fileName);
   });
 }
+
+let toggleNote = (numberId, userEmail) => {
+    let ref = database.ref("users");
+      ref.orderByChild("value").on("child_added", function(snapshot) {
+        if (snapshot.val().email === userEmail) {
+          let refFriend = database.ref("users/" + snapshot.key + "/notes");
+          refFriend.orderByChild("value").on("child_added", (snapshotTwo) => {
+            if (snapshotTwo.val().numberId === numberId) {
+              refFriend.child(snapshotTwo.key).update({
+                complete: !snapshotTwo.val().complete
+//                friendSurname: friendSurname,
+//                friendEmail: friendEmail
+              }).then(r => r);
+            }
+          });
+        }
+      }, function (errorObject) {
+        console.log("The read failed: " + errorObject.fileName);
+      });
+}
+
+
+let loggedUser = (callback) => {
+    var user = fb.auth().currentUser;
+        if (user) {
+            callback({"success": true, "user": user});
+        }
+        else{
+            callback({"success": false});
+        }
+}
+
+
+let userLoggedOut = (callback) => {
+    fb.auth().signOut()
+    .then(() => {
+      // Sign-out successful.
+      console.log("User signed out success");
+//      this.view.bindSignoutSuccess();
+//      this.model.readAllNotes();
+//      this.onNoteListChanged(this.model.notes);
+        callback({"success": true, "message": ""});
+    }).catch((error) => {
+      // An error happened.
+      var errorCode = error.code;
+        var errorMessage = error.message;
+        console.log("User signed out error");
+        console.log(errorMessage);
+        callback({"success": false, "message": error.message});
+//        this.view.bindSignoutError(errorMessage);
+    });
+}
+
+let userSingUp = (name, secondName, email, password, callback) => {
+    fb.auth().createUserWithEmailAndPassword(email, password)
+    .then((user) => {
+//       Signed in
+      addUser(name, secondName, "",email);
+      console.log("User signed in");
+      console.log(user);
+//      this.view.userSignedin(email);
+//      this.view.displayNotes([]);
+//      this.model.notes = [];
+        callback({"success": true, "message": ""});
+    })
+    .catch((error) => {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      console.log("Error");
+      console.log(errorMessage);
+      callback({"success": false, "message": error.message});
+//      this.view.displaySigninError(errorMessage);
+    });
+}
+
+let userSingIn = (email, password, callback) => {
+    fb.auth().signInWithEmailAndPassword(email, password)
+    .then((user) => {
+       // Signed in
+        callback({"success": true, "message": ""});
+     })
+     .catch((error) => {
+       var errorCode = error.code;
+       var errorMessage = error.message;
+       console.log("Error");
+       callback({"success": false, "message": error.message});
+     });
+ }
 
 let updateNotes = (numberId, userEmail, newNoteText ) => {
     let ref = database.ref("users");
@@ -172,8 +263,12 @@ export {
   addNotes,
   updateUser,
   updateFriendByName,
-  fb,
   readNotes,
   updateNotes,
-  deleteNotes
+  deleteNotes,
+  toggleNote,
+  loggedUser,
+  userLoggedOut,
+  userSingUp,
+  userSingIn
 };
