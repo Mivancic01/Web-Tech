@@ -214,9 +214,6 @@ export class Controller {
           const nextNoteId = this.model.notes.length > 0 ? this.model.notes[this.model.notes.length - 1].id + 1 : 1;
           addNotes(nextNoteId, res.user.email, noteTitle, encodedText, noteColor, image);
           console.log("out of add notes");
-
-          ///////////////////////////////// i added this note to local storage and it updates notes
-          // cheat!!! :)
           var indvNote = {};
           indvNote["id"] = nextNoteId;
           indvNote["color"] = noteColor;
@@ -224,11 +221,8 @@ export class Controller {
           indvNote["title"] = noteTitle;
           indvNote["image"] = image;
           indvNote["complete"] = false;
-
           window.localStorage.getItem('nextNoteId');
-
           console.log("callback");
-
           readNotes(res.user.email, (notesFromDB) => {
             console.log(notesFromDB + ' inside callback') ;
             console.log(indvNote) ;
